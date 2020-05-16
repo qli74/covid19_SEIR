@@ -1,0 +1,162 @@
+---
+title: "COVID-19 Fitting & Prediction with generalized SEIR model"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: united
+runtime: shiny
+
+---
+
+```{r global}
+library(ggplot2)
+library(plotly)
+library(lubridate)
+source('module.R')
+
+d0=as.Date("2020-01-22")
+tlabel=d0
+for (i in 1:150){
+  if (today() == d0+i-1){
+    break
+  } else{
+  tlabel<-c(tlabel,d0+i)
+  }
+}
+tlabel=as.character(tlabel)
+confirmed=getdata('confirmed',tlabel)
+deaths=getdata('deaths',tlabel)
+recovered=getdata('recovered',tlabel)
+regionlist=recovered$region
+```
+
+Fitting & Prediction
+=====================================  
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+### Fitting option
+```{r}
+selectInput("region", label = "location:",choices = c('US',regionlist), selected = 'US')
+selectInput("maxiter", label = "max itereration:",choices = c(10,20,30,40,50), selected = 30)
+selectInput("population", label = "population:",choices = c(6e5,6e6,6e7,6e8), selected = 6e6)
+actionButton("start_button", label="Start")
+#input$confirmed=confirmed
+#input$deaths=deaths
+#input$recovered=recovered
+#input$tlabel=tlabel
+allpics <- eventReactive(input$start_button, {
+  withProgress(message = 'fitting...', value = 0, {
+    # increment progress bar
+    incProgress(0.8)
+    return(fitregion(input$region,tlabel,confirmed,deaths,recovered,input$maxiter,input$population))
+  })
+})
+```
+
+### 
+
+```{r}
+renderUI({
+  HTML('Click the button to start. <br> If fitting failed, try changing the max iteration or the population. <br> Some region may not have enough data to fit. <br><br><br><br>'
+  )
+    })
+
+```
+
+### Source
+```{r}
+renderUI({
+  HTML(paste(
+    'Source link: <br> <a href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data">JHU CSSE COVID-19 Data</a> <br> Update date:  ',Sys.Date(),'')
+  )
+    })
+
+```
+
+Row {data-width=350}
+-------------------------------------
+
+### Recovery rate graph
+
+```{r}
+
+renderPlot({
+  validate(
+      need(!is.null(allpics()), "")
+    )
+  allpics()$p1
+})
+```
+
+### Death rate graph
+```{r}
+renderPlot({
+  validate(
+      need(!is.null(allpics()), "")
+    )
+  allpics()$p2
+})
+```
+
+
+Row {data-width=650}
+-------------------------------------
+
+### Comparison of the fitted and real data
+```{r}
+renderPlotly({
+  validate(
+      need(!is.null(allpics()), "Fitting failed. Try changing the max iteration or the population.")
+    )
+  ggplotly(allpics()$p3)
+})
+```
+
+Intro to Generalized SEIR Epidemic Model
+=====================================  
+Column {.sidebar data-width=300}
+-----------------------------------------------------------------------
+```{r}
+renderUI({
+  HTML('<h3>SEIR, SEIRS and Generized SEIR models</h3> 
+       <br><br>
+       <p style="line-height:200%">
+       The SEIR/SEIRS diagram shows how individuals move through each compartment in the model. The dashed line shows how the SEIR model becomes an SEIRS (Susceptible - Exposed - Infectious - Recovered - Susceptible) model, where recovered people may become susceptible again (recovery does not confer lifelong immunity). For example, rotovirus and malaria are diseases with long incubation durations, and where recovery only confers temporary immunity.</p>')
+})
+
+```
+
+
+Column {}
+-----------------------------------------------------------------------
+### SEIR and SEIRS model
+
+```{r}
+renderUI({HTML(
+       '<img src="https://idmod.org/docs/general/_images/SEIR-SEIRS.png" alt="SEIR and SEIRS model" width="400">
+       <br>
+       <h4>&beta; : The infectious rate</h4>
+
+       It controls the rate of spread which represents the probability of transmitting disease between a susceptible and an infectious individual. 
+
+        <h4>&sigma; : The incubation rate</h4>
+
+        It is the rate of latent individuals becoming infectious (average duration of incubation is 1/&sigma;).
+       <h4>&gamma; : Recovery rate, &gamma; = 1/D</h4>
+
+       It is determined by the average duration, D, of infection. 
+       
+       <h4>&xi; (for the SEIRS model):  </h4>
+       
+       It is the rate which recovered individuals return to the susceptible statue due to loss of immunity. '
+       )})
+```
+
+### Generized SEIR model
+
+```{r}
+renderUI({HTML(
+       '<img src="https://www.researchgate.net/profile/Peng_Liangrong/publication/339323999/figure/fig1/AS:859773234860034@1581997321421/The-epidemic-model-for-COVID-19-The-highlighted-part-shows-the-classical-SEIR-model.ppm"  width="600">'
+)})
+```
