@@ -16,7 +16,7 @@ source('module.R')
 d0=as.Date("2020-01-22")
 tlabel=d0
 for (i in 1:150){
-  if (today() == d0+i-1){
+  if (today() == d0+i){
     break
   } else{
   tlabel<-c(tlabel,d0+i)
