@@ -1,9 +1,8 @@
 # COVID-19 Fitting & Prediction with generalized SEIR model
-project-qli74 created by GitHub Classroom
 
-applink:https://lexine.shinyapps.io/covid_seir/ (If broke, try running it locally)
+app link:https://lexine.shinyapps.io/covid_seir/ (If broke, try running it locally)
 
-videolink:https://drive.google.com/file/d/1SUdbRYqeJOnfbXQx-UOfGWyHnJu1VCtn/view?usp=sharing
+intro video link:https://drive.google.com/file/d/1SUdbRYqeJOnfbXQx-UOfGWyHnJu1VCtn/view?usp=sharing
 
 ## library
 * ggplot2
@@ -17,6 +16,9 @@ videolink:https://drive.google.com/file/d/1SUdbRYqeJOnfbXQx-UOfGWyHnJu1VCtn/view
 * If fitting failed, try changing the max iteration or the population. Some regions may not have enough data to fit.
 
 ## Model description
+
+![example](seir.png)
+
 Compartmental models simplify the mathematical modelling of infectious disease. They show how individuals move through each compartment in the model, trying to predict things such as how a disease spreads, or the total number infected, or the duration of an epidemic, and to estimate various epidemiological parameters such as the reproductive number. 
 Basic models include SIR/SIRS and SEIR/SEIRS models. I chose a more complex model, called generalized SEIR model. 
 It has 7 compartments
