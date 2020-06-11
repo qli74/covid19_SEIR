@@ -1,6 +1,6 @@
 # COVID-19 Fitting & Prediction with generalized SEIR model
 
-app link:https://lexine.shinyapps.io/covid_seir/ (If broke, try running it locally)
+app link:https://lexine.shinyapps.io/covid_seir/ (If lost connection, try running it locally)
 
 intro video link:https://drive.google.com/file/d/1SUdbRYqeJOnfbXQx-UOfGWyHnJu1VCtn/view?usp=sharing
 
@@ -53,6 +53,7 @@ It has 6 parameters
 * *fitregion(region,tlabel,confirmed,deaths,recovered,maxiter=50,Npop=6e6)*
 
   main fuction. It calls fit_epidemic() to fit the model, and returns a list containing 3 pics and 6 parameters
+  
   3 pics are:
   * p1: recovered rate graph
   * p2: death rate graph
